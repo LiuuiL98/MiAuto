@@ -1,7 +1,8 @@
 # ICCOA CarLink 集成说明
 
 MiAuto 以 [DiAuto Pro](https://github.com/zutaozhong-hash/DiAuto-Pro) 为基座重建，把手机侧协议
-从 **Android Auto** 换成 **ICCOA CarLink**（接住小米 CarWith）。本文记录这次替换中真正踩过的坑，
+从 **Android Auto** 换成 **ICCOA CarLink**（接住小米 CarWith、OPPO Car+ 车联、vivo Jovi InCar
+等走同一套协议的手机端）。本文记录这次替换中真正踩过的坑，
 供后续维护者参考。
 
 ---

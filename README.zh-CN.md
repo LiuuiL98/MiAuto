@@ -1,15 +1,16 @@
 # MiAuto
 
-**小米 CarWith，直接上车机大屏。无线连接。**
+**小米 CarWith / OPPO Car+ 车联 / vivo Jovi InCar 等 ICCOA CarLink 手机，直接上车机大屏。无线连接。**
 
-**MiAuto 装在车机上**，把自己广播成一台支持 CarWith 的车机，与已经开着 CarWith 的小米手机配对。
-手机继续用它自己的地图、音乐与电话应用 —— 手机侧不装任何东西，车机侧也不需要配套账号、
-转接盒、数据线、root 或改固件。
+**MiAuto 装在车机上**，把自己广播成一台支持 ICCOA CarLink 的车机，与已经开着 CarWith、
+Car+ 车联或 Jovi InCar 的手机配对 —— 小米 / OPPO / vivo 等皆可。手机继续用它自己的地图、
+音乐与电话应用：手机侧不装任何东西，车机侧也不需要配套账号、转接盒、数据线、root 或改固件。
 
 > **本仓库以 [DiAuto Pro](https://github.com/zutaozhong-hash/DiAuto-Pro) 为基座**，
 > 而 DiAuto Pro 是 [DiAuto](https://github.com/shihabal3amri/DiAuto) 的独立分支，
 > DiAuto 又是 [Open Headunit](https://github.com/andreknieriem/open-headunit) 的独立分支。
-> 车机外壳、设置体系与 BYD 仪表 / HUD 输出都来自这条脉络；手机侧协议已换成 CarWith 所说的那一套。
+> 车机外壳、设置体系与 BYD 仪表 / HUD 输出都来自这条脉络；手机侧协议已换成 **ICCOA CarLink**
+> —— 小米 CarWith、OPPO Car+ 车联、vivo Jovi InCar 走的都是这一套。
 > 详见下方[致谢与许可](#致谢与许可)。
 
 [下载与安装](https://piggybackbayonet.github.io/MiAuto/zh-Hans/) ·
@@ -23,7 +24,8 @@
 
 首个公开版本。
 
-- 车机端无线接收小米 CarWith：6 位配对码显示在车机屏幕上，在手机上确认即可。
+- 车机端无线接收 ICCOA CarLink 手机端（小米 CarWith / OPPO Car+ 车联 / vivo Jovi InCar 等）：
+  6 位配对码显示在车机屏幕上，在手机上确认即可。
 - **30 秒重播看门狗**：车机在未连接状态下会重新发起广播，从而把手机上误关的配对弹窗叫回来，
   且无需重启应用。
 - **完整继承基座的设置体系** —— 连接、显示、视频、输入、音频、备份、重置与诊断。
@@ -34,9 +36,10 @@
 
 以下每项都附带**实际状态**，而不只是功能承诺。
 
-### 1. 让车机接住 CarWith
+### 1. 让车机接住手机互联
 
-应用把自己广播成一台 CarWith 可以投到的车机；手机在附近设备列表里发现它，在手机上确认 6 位配对码，
+应用把自己广播成一台 ICCOA CarLink 可以投到的车机 —— 小米 CarWith、OPPO Car+ 车联、
+vivo Jovi InCar 都连它；手机在附近设备列表里发现它，在手机上确认 6 位配对码，
 手机画面即出现在车机上。首次正常配对时，车机侧**无需按任何按钮**。
 
 车机端代码里仍保留了基座的 Android Auto 那一半。它现在只作为前台保活存在，其 AA 专属副作用
@@ -71,7 +74,7 @@ MiAuto 在未连接时每 30 秒重新广播一次：
 
 ## 功能一览
 
-- 无线接收小米 CarWith；手机可以放在兜里或无线充电板上。
+- 无线接收 ICCOA CarLink 手机端（小米 / OPPO / vivo 等）；手机可以放在兜里或无线充电板上。
 - 配对码自动出现，并带 30 秒重播看门狗（见上）。
 - 完整设置体系：连接、显示、视频、输入、音频、备份、重置与诊断。
 - 仪表盘镜像与挡风玻璃 HUD 导航，面向开放了这些区域的车机。
@@ -87,7 +90,8 @@ MiAuto 在未连接时每 30 秒重新广播一次：
 **尚未验证：** 在比亚迪或其他量产车机上的安装与配对，以及仪表盘 / HUD 投屏链路。
 若你正好在用这类设备，请把自己当作早期测试者，并把现象反馈给我们。
 
-需要一台装着 CarWith（或设置里对应的投屏入口）的小米手机。这不是 Android Auto，也不是 Apple CarPlay。
+需要一台支持 ICCOA CarLink 的手机：小米 CarWith、OPPO Car+ 车联、vivo Jovi InCar，
+或设置里对应的投屏入口。这不是 Android Auto，也不是 Apple CarPlay。
 
 请参阅[安装文档](docs/INSTALL.md)，其中包含权限与安装途径说明。安装 APK 需要你的车机允许。
 **请在停车状态下完成设置。**
@@ -103,10 +107,10 @@ MiAuto 在未连接时每 30 秒重新广播一次：
 
 产物位于 `app/build/outputs/apk/github/` 下。
 
-### CarWith 协议层不在本仓库内
+### ICCOA CarLink 协议层不在本仓库内
 
-CarWith / CarLink 协议以预编译 SDK 的形式引入，**该 SDK 不入 git**
-（见 [app/libs/README.md](app/libs/README.md)）。它在编译期的一半是一份纯签名存根
+ICCOA CarLink（CarWith / Car+ 车联 / Jovi InCar 走的手机侧协议）以预编译 SDK 的形式引入，
+**该 SDK 不入 git**（见 [app/libs/README.md](app/libs/README.md)）。它在编译期的一半是一份纯签名存根
 `app/stubs/icar-sdk-stubs.jar`，这份**是入库的** —— 只用于类型检查，绝不会进 APK。
 
 缺少 SDK dex 时构建仍会成功，但产出的 APK 不具备 CarWith 能力。当 SDK dex 存在时，
@@ -159,5 +163,5 @@ MiAuto 以 [DiAuto Pro](https://github.com/zutaozhong-hash/DiAuto-Pro) 为基座
 MiAuto 采用 **AGPL-3.0** 许可。见 [LICENSE](LICENSE) 与
 `COPYRIGHT_MICHAEL_REID_GPLv3AFFERO.txt` 中的原始版权声明。本仓库包含已发布应用的源码。
 
-本项目是独立的社区项目，与小米、ICCOA、Google、比亚迪均**无隶属、授权或合作关系**。
-文中提及的 Android Auto、CarWith 及所有产品与公司名称，归各自所有者所有。
+本项目是独立的社区项目，与小米、OPPO、vivo、ICCOA、Google、比亚迪均**无隶属、授权或合作关系**。
+文中提及的 Android Auto、CarWith、Car+、Jovi InCar 及所有产品与公司名称，归各自所有者所有。

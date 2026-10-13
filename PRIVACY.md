@@ -3,7 +3,8 @@
 Updated: 13 October 2026.
 
 MiAuto runs on the car's head unit and receives a screen projection from your phone over
-ICCOA CarLink (Xiaomi CarWith). Maps, music and calls are supplied by the phone's own
+ICCOA CarLink — the protocol behind Xiaomi CarWith, OPPO Car+ 车联 and vivo Jovi InCar. Maps,
+music and calls are supplied by the phone's own
 applications and are subject to those applications' policies. Touch and supported vehicle
 inputs are sent back to the phone.
 

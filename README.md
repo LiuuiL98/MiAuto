@@ -1,17 +1,19 @@
 # MiAuto
 
-**Xiaomi CarWith on your car's head unit. Wireless.**
+**Xiaomi CarWith, OPPO Car+, vivo Jovi InCar and other ICCOA CarLink phones, on your car's head
+unit. Wireless.**
 
-**MiAuto runs on the car**, advertises itself as a CarWith-capable head unit, and pairs with a
-Xiaomi phone that already has CarWith. Your phone keeps its own maps, music and calling apps —
-nothing extra is installed on the phone, and the car needs no companion account, dongle, cable,
-root or firmware modification.
+**MiAuto runs on the car**, advertises itself as an ICCOA CarLink-capable head unit, and pairs
+with a phone that already supports it — Xiaomi CarWith, OPPO Car+ 车联, vivo Jovi InCar and
+others. Your phone keeps its own maps, music and calling apps — nothing extra is installed on
+the phone, and the car needs no companion account, dongle, cable, root or firmware modification.
 
 > **This repository is built on [DiAuto Pro](https://github.com/zutaozhong-hash/DiAuto-Pro)**,
 > which is an independent fork of [DiAuto](https://github.com/shihabal3amri/DiAuto), which in
 > turn is an independent fork of [Open Headunit](https://github.com/andreknieriem/open-headunit).
 > The car-side shell, the settings tree and the BYD cluster / HUD outputs come from that
-> lineage; the phone-side protocol has been replaced with the one CarWith speaks.
+> lineage; the phone-side protocol has been replaced with ICCOA CarLink — the one protocol that
+> Xiaomi CarWith, OPPO Car+ and vivo Jovi InCar all speak.
 > See [Credits and license](#credits-and-license) below.
 
 [Download & installation](https://piggybackbayonet.github.io/MiAuto/) ·
@@ -25,8 +27,9 @@ root or firmware modification.
 
 First public release.
 
-- Wireless Xiaomi CarWith reception on the car, with a 6-digit pairing code shown on the car
-  screen and confirmed on the phone.
+- Wireless ICCOA CarLink reception on the car — Xiaomi CarWith, OPPO Car+ and vivo Jovi InCar
+  phones included — with a 6-digit pairing code shown on the car screen and confirmed on the
+  phone.
 - A **30-second re-advertise watchdog**: while the car is unconnected it restarts its
   advertisement, which brings back a pairing prompt that was dismissed on the phone without
   restarting the app.
@@ -41,11 +44,12 @@ First public release.
 
 Each item below is described with its actual state, not just its promise.
 
-### 1. CarWith on the car
+### 1. Phone connectivity on the car
 
-The app advertises a CarWith-receivable head unit; the phone finds it in the nearby-device
-list, a 6-digit code is confirmed on the phone, and the phone screen appears on the car.
-There is no button to press on the car side for a normal first pairing.
+The app advertises an ICCOA CarLink head unit — the kind Xiaomi CarWith, OPPO Car+ and vivo
+Jovi InCar all connect to; the phone finds it in the nearby-device list, a 6-digit code is
+confirmed on the phone, and the phone screen appears on the car. There is no button to press
+on the car side for a normal first pairing.
 
 The car-side codebase still contains the Android Auto half of the base project. It is kept
 only as a foreground keep-alive, and its Android-Auto-only side effects are deliberately
@@ -83,7 +87,8 @@ because a control that hides itself is indistinguishable from a feature that was
 
 ## Features
 
-- Wireless Xiaomi CarWith reception; the phone stays in a pocket or on a wireless charger.
+- Wireless reception for ICCOA CarLink phones (Xiaomi CarWith, OPPO Car+, vivo Jovi InCar and
+  others); the phone stays in a pocket or on a wireless charger.
 - Automatic pairing code, with the 30-second re-advertise watchdog described above.
 - Full settings tree: connection, display, video, input, audio, backup, reset and diagnostics.
 - Instrument cluster mirror and windshield HUD navigation, for cars that expose those areas.
@@ -102,8 +107,9 @@ cold start.
 instrument cluster / HUD projection paths. If you run one of those setups, expect to be an
 early tester, and please report what you see.
 
-A Xiaomi phone with CarWith (or the equivalent screen-mirroring entry in Settings) is required.
-This is not Android Auto and not Apple CarPlay.
+A phone that supports ICCOA CarLink is required: Xiaomi CarWith, OPPO Car+ 车联, vivo Jovi
+InCar, or an equivalent screen-mirroring entry in Settings. This is not Android Auto and not
+Apple CarPlay.
 
 See the [installation guide](docs/INSTALL.md), including permissions and installation routes.
 APK installation must be allowed by your head unit. **Set up while parked.**
@@ -119,12 +125,12 @@ Set `ANDROID_HOME` or an untracked `local.properties` with `sdk.dir=...`.
 
 APKs are under `app/build/outputs/apk/github/`.
 
-### The CarWith protocol layer is not in this repository
+### The CarWith / CarLink protocol layer is not in this repository
 
-The CarWith / CarLink protocol is consumed as a prebuilt SDK that is **absent from git**
-(see [app/libs/README.md](app/libs/README.md)). The compile-time half of it is a
-signature-only stub jar, `app/stubs/icar-sdk-stubs.jar`, which *is* committed — it is used for
-type checking and never enters the APK.
+ICCOA CarLink — the protocol behind CarWith, Car+ and Jovi InCar — is consumed as a prebuilt
+SDK that is **absent from git** (see [app/libs/README.md](app/libs/README.md)). The compile-time
+half of it is a signature-only stub jar, `app/stubs/icar-sdk-stubs.jar`, which *is* committed —
+it is used for type checking and never enters the APK.
 
 Without the SDK dex the build still succeeds, but the resulting APK has no CarWith support.
 When the SDK dex is present, `injectIccoaDex` appends it to the packaged APK as the next free
@@ -183,5 +189,5 @@ MiAuto is licensed **AGPL-3.0**. See [LICENSE](LICENSE) and the original copyrig
 published app.
 
 This is an independent community project. It is **not affiliated with, authorised by or
-endorsed by Xiaomi, ICCOA, Google or BYD**. Android Auto, CarWith and all product and company
-names mentioned are trademarks of their respective owners.
+endorsed by Xiaomi, OPPO, vivo, ICCOA, Google or BYD**. Android Auto, CarWith, Car+, Jovi InCar
+and all product and company names mentioned are trademarks of their respective owners.

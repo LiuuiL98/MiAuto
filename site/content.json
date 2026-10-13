@@ -4,12 +4,12 @@
     "dir": "ltr",
     "tag": "Independent community project",
     "badge": "PUBLIC RELEASE",
-    "title": "Xiaomi CarWith.\nRight on your car screen.",
-    "intro": "Your phone's navigation, music and calls on the car display. MiAuto runs on the car, your phone keeps using CarWith, and the two find each other over the air.",
+    "title": "Xiaomi / OPPO / vivo phones.\nRight on your car screen.",
+    "intro": "Your phone's navigation, music and calls on the car display. MiAuto runs on the car, your phone keeps using CarWith, Car+ or Jovi InCar, and the two find each other over the air.",
     "download": "Download APK",
     "install": "How to install",
     "promise": "No companion app on the car. No dongle or external hardware. No root.",
-    "requires": "Install MiAuto on the car, then open CarWith on your Xiaomi phone and pick this car from the nearby-device list. Pairing happens automatically and the 6-digit code appears on the car screen.",
+    "requires": "Install MiAuto on the car, then open CarWith, Car+ 车联 or Jovi InCar on your phone and pick this car from the nearby-device list. Pairing happens automatically and the 6-digit code appears on the car screen.",
     "gallery": "Made for the car",
     "captions": [
       "The car waits with a 6-digit pairing code. Open CarWith on the phone and pick this car — no buttons to press on the car side.",
@@ -20,14 +20,14 @@
     "steps": [
       "Download the APK and install it on the head unit through whichever installation route your car permits. Allow installation from unknown sources if it asks.",
       "Open MiAuto once. The home screen shows the car name and a 6-digit pairing code.",
-      "On your Xiaomi phone, open CarWith (or the equivalent screen-mirroring entry in Settings) and pick this car from the nearby-device list.",
+      "On your phone, open CarWith, Car+ 车联 or Jovi InCar (or the equivalent screen-mirroring entry in Settings) and pick this car from the nearby-device list.",
       "Accept the pairing prompt on the phone. The phone screen appears on the car. Do this while parked."
     ],
     "adb": "Full installation guide",
     "bssid": "If the phone cannot find the car, keep the phone's Bluetooth and Wi-Fi on, keep both screens awake, and try again. The car re-advertises itself every 30 seconds while it is unconnected, so a pairing prompt that was dismissed on the phone will come back on its own.",
     "whats": "What's new",
     "features": [
-      "**Wireless Xiaomi CarWith reception** — the phone stays in the pocket or on the wireless charger.",
+      "**Wireless ICCOA CarLink reception** — Xiaomi CarWith, OPPO Car+, vivo Jovi InCar and similar phones; the phone stays in the pocket or on the wireless charger.",
       "**Automatic pairing code** with a 30-second re-advertise watchdog, so a dismissed prompt on the phone comes back without restarting the app.",
       "**Full settings tree inherited from the base project** — connection, display, video, input, audio, backup, reset and diagnostics.",
       "**Instrument cluster and HUD projection paths** carried over from the base project, for cars that expose those areas. See the honest status below.",
@@ -37,12 +37,12 @@
     "compat": "Compatibility",
     "compatText": "**Verified on a Newland NLS-MT9055-GL running Android 11 (arm64):** the app installs, starts, advertises, shows a pairing code and completes a CarWith session, and the pairing code survives a cold start. **Not yet verified:** installation and pairing on a BYD or other production head unit, and the cluster / HUD projection paths, which are carried over from the base project and have not been exercised on hardware with MiAuto's protocol stack. If you run one of those setups, expect to be an early tester and please report what you see.",
     "highlightsTitle": "What this project actually does",
-    "highlightsLead": "MiAuto is a car-side receiver for Xiaomi CarWith. It is built on an existing Android Auto head-unit project, with the phone-side protocol swapped for the one CarWith speaks — so the parts that were already solid came along, and the new part is the one that needed real testing.",
+    "highlightsLead": "MiAuto is a car-side receiver for ICCOA CarLink — the one protocol behind Xiaomi CarWith, OPPO Car+ and vivo Jovi InCar. It is built on an existing Android Auto head-unit project, with the phone-side protocol swapped for that one — so the parts that were already solid came along, and the new part is the one that needed real testing.",
     "cards": [
       {
-        "eyebrow": "CarWith",
-        "title": "CarWith, received on the car",
-        "body": "The app advertises itself as a car that CarWith can cast to. Your phone keeps its own maps, music and phone apps; nothing is installed on the phone and nothing needs to be configured on the car beyond the APK itself.",
+        "eyebrow": "CarWith / Car+ / Jovi InCar",
+        "title": "Phone mirroring, received on the car",
+        "body": "The app advertises itself as a car that any ICCOA CarLink phone can cast to. Your phone keeps its own maps, music and phone apps; nothing is installed on the phone and nothing needs to be configured on the car beyond the APK itself.",
         "points": [
           "The car broadcasts, the phone finds it in the nearby-device list.",
           "A 6-digit code is shown on the car and confirmed on the phone.",
@@ -78,7 +78,7 @@
     ],
     "specRows": [
       [
-        "CarWith session over the air",
+        "ICCOA CarLink session over the air",
         "Verified on hardware",
         "Newland NLS-MT9055-GL, Android 11, arm64"
       ],
@@ -106,9 +106,9 @@
     "notes": "Release notes",
     "source": "Source code",
     "feedback": "Report an issue",
-    "footer": "An independent community project, built on DiAuto Pro, which is an independent fork of Open Headunit. Not affiliated with, authorised by or endorsed by Xiaomi, ICCOA, Google or BYD. Product and company names are trademarks of their respective owners.",
+    "footer": "An independent community project, built on DiAuto Pro, which is an independent fork of Open Headunit. Not affiliated with, authorised by or endorsed by Xiaomi, OPPO, vivo, ICCOA, Google or BYD. Product and company names are trademarks of their respective owners.",
     "guide": "Installation guide",
-    "supportScope": "Scope: this project is aimed at Xiaomi CarWith on car head units. Reports from other phones or other mirroring protocols are welcome but unsupported.",
+    "supportScope": "Scope: this project is aimed at ICCOA CarLink phones on car head units — Xiaomi CarWith, OPPO Car+, vivo Jovi InCar and similar. Reports about other mirroring protocols are welcome but unsupported.",
     "followAction": "Open releases"
   },
   "zh-Hans": {
@@ -116,12 +116,12 @@
     "dir": "ltr",
     "tag": "独立社区项目",
     "badge": "公开发布",
-    "title": "小米 CarWith，\n直接上车机大屏。",
-    "intro": "手机上的导航、音乐与电话，落到这块车机屏幕上。MiAuto 装在车机上，手机上的 CarWith 照常用，两者在空中自己配对。",
+    "title": "小米 / OPPO / vivo 等 ICCOA CarLink 手机，\n直接上车机大屏。",
+    "intro": "手机上的导航、音乐与电话，落到这块车机屏幕上。MiAuto 装在车机上，手机上的 CarWith、Car+ 车联或 Jovi InCar 照常用，两者在空中自己配对。",
     "download": "下载 APK",
     "install": "安装方法",
     "promise": "车机上不需要配套应用，不需要转接盒等外接硬件，不需要 root。",
-    "requires": "把 MiAuto 装到车机上，然后在小米手机上打开 CarWith，在附近设备列表里选中本车机即可。配对全自动，6 位配对码会显示在车机屏幕上。",
+    "requires": "把 MiAuto 装到车机上，然后在手机上打开 CarWith、Car+ 车联或 Jovi InCar，在附近设备列表里选中本车机即可。配对全自动，6 位配对码会显示在车机屏幕上。",
     "gallery": "为车机而做",
     "captions": [
       "车机待连时显示 6 位配对码。在手机上打开 CarWith 并选中本车机即可 —— 车机侧无需按任何按钮。",
@@ -132,14 +132,14 @@
     "steps": [
       "下载 APK，通过你的车机允许的方式安装。若系统提示，请允许「安装未知来源应用」。",
       "打开一次 MiAuto。首页会显示车机名称与一个 6 位配对码。",
-      "在小米手机上打开 CarWith（或设置里的投屏入口），在附近设备列表里选中本车机。",
+      "在手机上打开 CarWith、Car+ 车联或 Jovi InCar（或设置里的投屏入口），在附近设备列表里选中本车机。",
       "在手机上点确认配对，手机画面即出现在车机上。请在停车状态下操作。"
     ],
     "adb": "完整安装文档",
     "bssid": "若手机找不到车机，请保持手机蓝牙与 WiFi 开启、两块屏幕都亮着，然后重试。车机在未连接状态下每 30 秒重新广播一次，因此手机上被关掉的配对弹窗会自己回来。",
     "whats": "更新内容",
     "features": [
-      "**无线接收小米 CarWith** —— 手机放在兜里或无线充电板上即可。",
+      "**无线接收 ICCOA CarLink 手机端**（小米 CarWith / OPPO Car+ 车联 / vivo Jovi InCar 等）—— 手机放在兜里或无线充电板上即可。",
       "**配对码自动出现**，并带 30 秒重播看门狗：手机上误关的配对弹窗会自己回来，无需重启应用。",
       "**完整继承基座的设置体系** —— 连接、显示、视频、输入、音频、备份、重置与诊断。",
       "**继承仪表盘与 HUD 输出链路**，供开放了这些区域的车机使用；详见下方的真实状态。",
@@ -149,12 +149,12 @@
     "compat": "兼容性",
     "compatText": "**已验证：** 在 Newland NLS-MT9055-GL（Android 11 / arm64）上，应用可安装、可启动、可广播、可显示配对码并完成一次 CarWith 会话，且配对码在冷启动后依然有效。**尚未验证：** 在比亚迪或其他量产车机上的安装与配对，以及仪表盘 / HUD 投屏链路 —— 这些继承自基座，尚未与 MiAuto 的协议栈一起在真实车机上跑过。若你正好在用这类设备，请把自己当作早期测试者，并把现象反馈给我们。",
     "highlightsTitle": "这个项目实际做了什么",
-    "highlightsLead": "MiAuto 是小米 CarWith 的车机端接收器。它以既有的 Android Auto 车机端工程为基座，把手机侧协议换成 CarWith 所说的那套 —— 于是原本就稳的部分得以沿用，而真正需要实测的，是换掉的那一块。",
+    "highlightsLead": "MiAuto 是 ICCOA CarLink 的车机端接收器 —— 小米 CarWith、OPPO Car+ 车联、vivo Jovi InCar 走的都是这一套协议。它以既有的 Android Auto 车机端工程为基座，把手机侧协议换成这一套 —— 于是原本就稳的部分得以沿用，而真正需要实测的，是换掉的那一块。",
     "cards": [
       {
-        "eyebrow": "CarWith",
-        "title": "让车机接住 CarWith",
-        "body": "应用把自己广播成一台 CarWith 可以投到的车机。手机继续用它自己的地图、音乐与电话应用；手机侧不装任何东西，车机侧除了这个 APK 也不需要额外配置。",
+        "eyebrow": "CarWith / Car+ / Jovi InCar",
+        "title": "让车机接住手机互联",
+        "body": "应用把自己广播成一台任何 ICCOA CarLink 手机都可以投到的车机。手机继续用它自己的地图、音乐与电话应用；手机侧不装任何东西，车机侧除了这个 APK 也不需要额外配置。",
         "points": [
           "车机广播，手机在附近设备列表里发现它。",
           "6 位配对码显示在车机上，在手机上确认。",
@@ -190,7 +190,7 @@
     ],
     "specRows": [
       [
-        "空中建立 CarWith 会话",
+        "空中建立 ICCOA CarLink 会话",
         "真机已验证",
         "Newland NLS-MT9055-GL / Android 11 / arm64"
       ],
@@ -218,9 +218,9 @@
     "notes": "版本说明",
     "source": "源代码",
     "feedback": "反馈问题",
-    "footer": "独立的社区项目，基座为 DiAuto Pro，而 DiAuto Pro 是 Open Headunit 的独立分支。与小米、ICCOA、Google、比亚迪均无隶属、授权或合作关系。文中提及的产品与公司名称归各自所有者所有。",
+    "footer": "独立的社区项目，基座为 DiAuto Pro，而 DiAuto Pro 是 Open Headunit 的独立分支。与小米、OPPO、vivo、ICCOA、Google、比亚迪均无隶属、授权或合作关系。文中提及的产品与公司名称归各自所有者所有。",
     "guide": "安装文档",
-    "supportScope": "范围说明：本项目面向车机上的小米 CarWith。其他手机或其他投屏协议的反馈同样欢迎，但不提供支持。",
+    "supportScope": "范围说明：本项目面向车机上的 ICCOA CarLink 手机端 —— 小米 CarWith、OPPO Car+ 车联、vivo Jovi InCar 等。其他投屏协议的反馈同样欢迎，但不提供支持。",
     "followAction": "打开发布页"
   }
 }

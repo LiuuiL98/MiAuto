@@ -1,10 +1,11 @@
 # app/libs — runtime dependencies that are not in git
 
-## `icar-sdk.dex` — ICCOA CarLink / Xiaomi CarWith protocol SDK
+## `icar-sdk.dex` — ICCOA CarLink protocol SDK
 
-**This file is deliberately absent from the repository.** It is a prebuilt, third-party,
-proprietary bytecode blob, so it is neither redistributed here nor covered by this project's
-AGPL-3.0 licence. `.gitignore` keeps it out (`*.dex`), and
+The ICCOA CarLink protocol is the phone-side transport behind Xiaomi CarWith, OPPO Car+ 车联 and
+vivo Jovi InCar. **This file is deliberately absent from the repository.** It is a prebuilt,
+third-party, proprietary bytecode blob, so it is neither redistributed here nor covered by this
+project's AGPL-3.0 licence. `.gitignore` keeps it out (`*.dex`), and
 [`injectIccoaDex`](../build.gradle.kts) treats its absence as "build without CarWith support"
 rather than as an error.
 
