@@ -44,10 +44,10 @@ class AboutFragment : Fragment() {
         sb.append("<a href=\"https://github.com/mikereidis/headunit\">https://github.com/mikereidis/headunit</a><br/><br/>")
         sb.append("<h3>MiAuto ${com.andrerinas.openheadunit.BuildConfig.VERSION_NAME}</h3>")
         sb.append("<a href=\"").append(REPO_URL).append("\">MiAuto source and releases</a><br/>")
-        sb.append("MiAuto brings Xiaomi CarWith to the car over ICCOA CarLink. It is built on ")
+        sb.append("MiAuto brings Xiaomi CarWith, OPPO Car+ and vivo Jovi InCar to the car over ICCOA CarLink. It is built on ")
         sb.append("<a href=\"https://github.com/zutaozhong-hash/DiAuto-Pro\">DiAuto</a> and ")
         sb.append("<a href=\"https://github.com/andreknieriem/open-headunit\">Open Headunit</a>; ")
-        sb.append("thanks to their authors and contributors. Not affiliated with Google, Xiaomi or BYD.<br/><br/>")
+        sb.append("thanks to their authors and contributors. Not affiliated with Google, Xiaomi, OPPO, vivo or BYD.<br/><br/>")
 
         sb.append(parseMarkdownToHtml(readAsset(changelogAsset())))
         sb.append("<br/><br/>")

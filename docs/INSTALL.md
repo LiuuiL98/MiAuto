@@ -1,4 +1,4 @@
-# 安装 MiAuto 0.1.0
+# 安装 MiAuto 0.1.1
 
 把 APK 装到**车机的 Android 系统上**，不是装在手机上。
 已验证设备：Newland NLS-MT9055-GL（Android 11 / arm64）。比亚迪及其他车机**尚未验证**。
@@ -8,8 +8,8 @@
 ## 下载
 
 使用[下载页](https://piggybackbayonet.github.io/MiAuto/zh-Hans/)或
-[GitHub Release](https://github.com/PiggyBackBayonet/MiAuto/releases/tag/v0.1.0)。
-下载 `MiAuto-0.1.0.apk`。校验值随 APK 一并提供。
+[GitHub Release](https://github.com/PiggyBackBayonet/MiAuto/releases/tag/v0.1.1)。
+下载 `MiAuto-0.1.1.apk`。校验值随 APK 一并提供。
 
 ## 安装与连接
 
@@ -38,20 +38,20 @@
 
 ```sh
 adb connect CAR_IP:5555
-adb -s CAR_IP:5555 install -r MiAuto-0.1.0.apk
+adb -s CAR_IP:5555 install -r MiAuto-0.1.1.apk
 ```
 
 仓库内的安装脚本还会顺带授予 MiAuto 所需的运行时权限、打开定位、放行悬浮窗，
 并把应用加入电池优化白名单：
 
 ```sh
-./scripts/install.sh CAR_IP:5555 /absolute/path/to/MiAuto-0.1.0.apk
+./scripts/install.sh CAR_IP:5555 /absolute/path/to/MiAuto-0.1.1.apk
 ```
 
 装的是 debug 构建时，包名是 `com.miauto.app.debug`，用 `PKG=` 覆盖：
 
 ```sh
-PKG=com.miauto.app.debug ./scripts/install.sh CAR_IP:5555 MiAuto-0.1.0-debug.apk
+PKG=com.miauto.app.debug ./scripts/install.sh CAR_IP:5555 MiAuto-0.1.1-debug.apk
 ```
 
 ## 升级与签名

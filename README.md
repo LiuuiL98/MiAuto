@@ -23,6 +23,17 @@ the phone, and the car needs no companion account, dongle, cable, root or firmwa
 
 ![The car waiting with a 6-digit pairing code, and the CarWith session name](site/assets/connect.png)
 
+## What's new in 0.1.1
+
+Wording only — behaviour is identical to 0.1.0.
+
+- ICCOA CarLink is a standard jointly initiated by Xiaomi, OPPO and vivo, so the home screen,
+  the About and Support screens and the legal notice now name Xiaomi CarWith, OPPO Car+ and
+  vivo Jovi InCar together instead of Xiaomi alone.
+- The legal notice now explains what ICCOA CarLink is, and lists OPPO and vivo alongside
+  Xiaomi, ICCOA, Google and BYD.
+- Added Traditional Chinese home-screen strings; a zh-TW device used to fall back to English.
+
 ## What's new in 0.1.0
 
 First public release.

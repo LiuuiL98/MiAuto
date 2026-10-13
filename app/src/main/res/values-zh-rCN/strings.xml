@@ -797,7 +797,7 @@
     <string name="support_rules_search_title">不要重复回报</string>
     <string name="support_rules_search_desc">请先搜索现有的 Issue。如果已有人回报相同问题，请在那个 Issue 补充您的情况，不要另开新的。只有在找不到相符的 Issue 时，才开一个新的。</string>
     <string name="support_rules_phone_title">手机信息也很重要</string>
-    <string name="support_rules_phone_desc">您的手机型号、Android 版本，以及手机上 CarWith 应用程序的版本。有些问题只在特定版本的 CarWith 上出现。</string>
+    <string name="support_rules_phone_desc">您的手机型号、Android 版本，以及手机上小米 CarWith、OPPO Car+ 车联或 vivo Jovi InCar 应用程序的版本。有些问题只在特定版本上出现。</string>
     <string name="support_rules_describe_title">清楚描述问题</string>
     <string name="support_rules_describe_desc">您做了什么、预期会发生什么，以及实际发生了什么。对于视觉问题，附上截屏或短片会非常有帮助。</string>
     <string name="support_rules_oneissue_title">一个 Issue 只处理一个问题</string>

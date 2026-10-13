@@ -9,7 +9,7 @@
     <string name="da_brand">MiAuto</string>
     <string name="da_tagline">MIAUTOCAR · HEAD UNIT</string>
     <string name="da_headline">Your phone, on your car screen.</string>
-    <string name="da_description">Mirror your phone to this screen or to the cluster / HUD.\nOpen CarWith on your phone and pick this car to start.</string>
+    <string name="da_description">Mirror your phone to this screen or to the cluster / HUD.\nOpen Xiaomi CarWith, OPPO Car+ or vivo Jovi InCar on your phone and pick this car to start.</string>
     <string name="da_connect">Start pairing</string>
     <string name="da_open">Open projection</string>
     <string name="da_ready">Waiting for your phone</string>
@@ -18,8 +18,8 @@
     <string name="da_pin">Pairing code: %1$s</string>
     <string name="da_pin_label">PAIRING CODE</string>
     <string name="da_refresh_pin">Refresh pairing code</string>
-    <string name="da_hint">Keep Bluetooth and Wi-Fi on. Open CarWith on your phone, tap this car, then check the pairing code shown here.</string>
-    <string name="da_wireless">MIAUTO CARLINK · CARWITH</string>
+    <string name="da_hint">Keep Bluetooth and Wi-Fi on. Open Xiaomi CarWith, OPPO Car+ or vivo Jovi InCar on your phone, tap this car, then check the pairing code shown here.</string>
+    <string name="da_wireless">MIAUTO CARLINK · CARWITH / CAR+ / JOVI</string>
     <string name="da_usb">Pair via Bluetooth</string>
     <string name="da_usb_hint">Pair this car in your phone’s Bluetooth settings first.</string>
     <string name="da_settings">Settings</string>
@@ -44,5 +44,5 @@
     <string name="da_settings_subtitle">Tune your display, sound and connection.</string>
     <string name="da_bluetooth_music">Music through car Bluetooth</string>
     <string name="da_bluetooth_music_hint">Keep music with the car’s Bluetooth player. MiAuto leaves its audio focus alone; navigation and assistant audio remain available. Reconnect after changing this.</string>
-    <string name="da_legal">MiAuto is an independent third-party open-source project. It is not affiliated with, authorized by, or endorsed by BYD, ICCOA CarLink, Xiaomi CarWith, or their trademark owners. All names and trademarks belong to their respective owners. This project is provided for learning and technical exchange only. Do not use it commercially. You are responsible for any consequences of its use.</string>
+    <string name="da_legal">MiAuto is an independent third-party open-source project, built on DiAuto Pro and Open Headunit. It is not affiliated with, authorized by or endorsed by BYD, ICCOA, Google, Xiaomi, OPPO, vivo or their trademark owners. ICCOA CarLink is an in-car connectivity standard jointly initiated by Xiaomi, OPPO and vivo; Xiaomi CarWith, OPPO Car+ and vivo Jovi InCar are its three phone-side front ends, and MiAuto is an independent receiver for it on the car side. All names and trademarks belong to their respective owners. This project is provided for learning and technical exchange only. Do not use it commercially. You are responsible for any consequences of its use.</string>
 </resources>

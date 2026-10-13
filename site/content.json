@@ -12,7 +12,7 @@
     "requires": "Install MiAuto on the car, then open CarWith, Car+ 车联 or Jovi InCar on your phone and pick this car from the nearby-device list. Pairing happens automatically and the 6-digit code appears on the car screen.",
     "gallery": "Made for the car",
     "captions": [
-      "The car waits with a 6-digit pairing code. Open CarWith on the phone and pick this car — no buttons to press on the car side.",
+      "The car waits with a 6-digit pairing code. Open CarWith, Car+ or Jovi InCar on the phone and pick this car — no buttons to press on the car side.",
       "Everything lives in one settings tree: connection, display and sound.",
       "About screen, including the version, upgrade notes and the open-source credits."
     ],
@@ -27,6 +27,7 @@
     "bssid": "If the phone cannot find the car, keep the phone's Bluetooth and Wi-Fi on, keep both screens awake, and try again. The car re-advertises itself every 30 seconds while it is unconnected, so a pairing prompt that was dismissed on the phone will come back on its own.",
     "whats": "What's new",
     "features": [
+      "**0.1.1 — wording update.** ICCOA CarLink is a standard jointly initiated by Xiaomi, OPPO and vivo. The home screen, the About and Support screens and the legal notice now name Xiaomi CarWith, OPPO Car+ and vivo Jovi InCar together instead of Xiaomi alone, and Traditional Chinese home-screen strings were added. No behaviour change.",
       "**Wireless ICCOA CarLink reception** — Xiaomi CarWith, OPPO Car+, vivo Jovi InCar and similar phones; the phone stays in the pocket or on the wireless charger.",
       "**Automatic pairing code** with a 30-second re-advertise watchdog, so a dismissed prompt on the phone comes back without restarting the app.",
       "**Full settings tree inherited from the base project** — connection, display, video, input, audio, backup, reset and diagnostics.",
@@ -124,7 +125,7 @@
     "requires": "把 MiAuto 装到车机上，然后在手机上打开 CarWith、Car+ 车联或 Jovi InCar，在附近设备列表里选中本车机即可。配对全自动，6 位配对码会显示在车机屏幕上。",
     "gallery": "为车机而做",
     "captions": [
-      "车机待连时显示 6 位配对码。在手机上打开 CarWith 并选中本车机即可 —— 车机侧无需按任何按钮。",
+      "车机待连时显示 6 位配对码。在手机上打开 CarWith、Car+ 车联或 Jovi InCar 并选中本车机即可 —— 车机侧无需按任何按钮。",
       "连接、显示与声音，都收在同一套设置里。",
       "关于页：版本号、升级说明与开源署名。"
     ],
@@ -139,6 +140,7 @@
     "bssid": "若手机找不到车机，请保持手机蓝牙与 WiFi 开启、两块屏幕都亮着，然后重试。车机在未连接状态下每 30 秒重新广播一次，因此手机上被关掉的配对弹窗会自己回来。",
     "whats": "更新内容",
     "features": [
+      "**0.1.1 —— 文案更新。** ICCOA CarLink 是小米、OPPO、vivo 联合发起的标准。首页、「关于」「支持」页面与法务声明改为并列书写「小米 CarWith / OPPO Car+ 车联 / vivo Jovi InCar」，不再只提小米；并补上繁体中文首页文案。行为与 0.1.0 一致。",
       "**无线接收 ICCOA CarLink 手机端**（小米 CarWith / OPPO Car+ 车联 / vivo Jovi InCar 等）—— 手机放在兜里或无线充电板上即可。",
       "**配对码自动出现**，并带 30 秒重播看门狗：手机上误关的配对弹窗会自己回来，无需重启应用。",
       "**完整继承基座的设置体系** —— 连接、显示、视频、输入、音频、备份、重置与诊断。",

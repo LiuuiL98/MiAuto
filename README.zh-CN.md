@@ -20,6 +20,15 @@ Car+ 车联或 Jovi InCar 的手机配对 —— 小米 / OPPO / vivo 等皆可�
 
 ![车机待连时显示 6 位配对码](site/assets/connect.png)
 
+## 0.1.1 更新内容
+
+仅文案修正，行为与 0.1.0 完全一致。
+
+- ICCOA CarLink 是小米、OPPO、vivo 联合发起的标准，因此应用的首页、「关于」「支持」页面与法务声明
+  统一改为并列书写「小米 CarWith / OPPO Car+ 车联 / vivo Jovi InCar」，不再只提小米。
+- 法务声明补充了 ICCOA CarLink 的说明，并把 OPPO、vivo 与小米、ICCOA、Google、比亚迪并列列出。
+- 新增繁体中文首页文案；此前 zh-TW 会回退到英文。
+
 ## 0.1.0 更新内容
 
 首个公开版本。

@@ -525,7 +525,7 @@
     <string name="support_rules_search_title">No duplicates</string>
     <string name="support_rules_search_desc">First search the existing issues. If an open issue already describes your problem, add your details as a comment there instead of opening a new one. Only open a new issue if none matches.</string>
     <string name="support_rules_phone_title">Your phone matters too</string>
-    <string name="support_rules_phone_desc">Your phone model, its Android version and the CarWith app version on the phone. Some problems come from a specific CarWith release.</string>
+    <string name="support_rules_phone_desc">Your phone model, its Android version and the version of the Xiaomi CarWith, OPPO Car+ or vivo Jovi InCar app on the phone. Some problems come from a specific release of one of them.</string>
     <string name="support_rules_describe_title">Describe it clearly</string>
     <string name="support_rules_describe_desc">What you did, what you expected and what actually happened. A screenshot or a short video helps a lot for visual problems.</string>
     <string name="support_rules_oneissue_title">One problem per issue</string>

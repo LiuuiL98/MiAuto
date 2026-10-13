@@ -3,7 +3,7 @@
     <string name="da_brand">MiAuto</string>
     <string name="da_tagline">MIAUTOCAR · في سيارتك</string>
     <string name="da_headline">هاتفك على شاشة سيارتك.</string>
-    <string name="da_description">اعرض شاشة هاتفك على هذه الشاشة أو على العدّاد / HUD.\nافتح CarWith على هاتفك واختر هذه السيارة للبدء.</string>
+    <string name="da_description">اعرض شاشة هاتفك على هذه الشاشة أو على العدّاد / HUD.\nافتح Xiaomi CarWith أو OPPO Car+ أو vivo Jovi InCar على هاتفك واختر هذه السيارة للبدء.</string>
     <string name="da_connect">بدء الاقتران</string>
     <string name="da_open">فتح العرض</string>
     <string name="da_ready">بانتظار هاتفك</string>
@@ -12,8 +12,8 @@
     <string name="da_pin">رمز الاقتران: %1$s</string>
     <string name="da_pin_label">رمز الاقتران</string>
     <string name="da_refresh_pin">تحديث رمز الاقتران</string>
-    <string name="da_hint">أبقِ Bluetooth وWi-Fi مفعّلين. افتح CarWith على هاتفك، واختر هذه السيارة، ثم تحقق من رمز الاقتران الظاهر هنا.</string>
-    <string name="da_wireless">MIAUTO CARLINK · CARWITH</string>
+    <string name="da_hint">أبقِ Bluetooth وWi-Fi مفعّلين. افتح Xiaomi CarWith أو OPPO Car+ أو vivo Jovi InCar على هاتفك، واختر هذه السيارة، ثم تحقق من رمز الاقتران الظاهر هنا.</string>
+    <string name="da_wireless">MIAUTO CARLINK · CARWITH / CAR+ / JOVI</string>
     <string name="da_usb">الاقتران عبر Bluetooth</string>
     <string name="da_usb_hint">اقرن هذه السيارة أولاً من إعدادات Bluetooth في هاتفك.</string>
     <string name="da_settings">الإعدادات</string>
@@ -38,5 +38,5 @@
     <string name="da_settings_subtitle">اضبط الشاشة والصوت والاتصال.</string>
     <string name="da_bluetooth_music">الموسيقى عبر Bluetooth السيارة</string>
     <string name="da_bluetooth_music_hint">أبقِ الموسيقى في مشغّل Bluetooth السيارة. لا يغيّر MiAuto تركيزه الصوتي؛ ويظل صوت الملاحة والمساعد متاحاً. أعد التوصيل بعد تغيير هذا الخيار.</string>
-    <string name="da_legal">MiAuto مشروع مفتوح المصدر مستقل من طرف ثالث. لا تربطه أي علاقة بالشركة الرسمية BYD، ولا بـ ICCOA CarLink أو Xiaomi CarWith أو أصحاب علاماتها التجارية. جميع الأسماء والعلامات التجارية مملوكة لأصحابها. هذا المشروع مخصص للتعلّم والتبادل التقني فقط، ويُمنع استخدامه تجارياً. وتقع مسؤولية أي نتائج مترتبة على الاستخدام على المستخدم.</string>
+    <string name="da_legal">MiAuto مشروع مفتوح المصدر مستقل من طرف ثالث، مبني على DiAuto Pro وOpen Headunit. لا تربطه أي علاقة بشركة BYD الرسمية، ولا بـ ICCOA أو Google أو Xiaomi أو OPPO أو vivo أو أصحاب علاماتها التجارية. ICCOA CarLink معيار اتصال داخل السيارة أطلقته Xiaomi وOPPO وvivo بشكل مشترك؛ ويُعدّ Xiaomi CarWith وOPPO Car+ وvivo Jovi InCar واجهاته الثلاث على الهاتف، بينما MiAuto مستقبل مستقل له على جانب السيارة. جميع الأسماء والعلامات التجارية مملوكة لأصحابها. هذا المشروع مخصص للتعلّم والتبادل التقني فقط، ويُمنع استخدامه تجارياً. وتقع مسؤولية أي نتائج مترتبة على الاستخدام على المستخدم.</string>
 </resources>
