@@ -54,19 +54,19 @@ jobs:
       - name: Check core translations
         run: python3 scripts/check_localization.py
 
-      # The CarWith / CarLink protocol SDK is a proprietary prebuilt dex and is therefore
-      # not in git (see app/libs/README.md). Without it the build still succeeds, but the
-      # packaged APK has no CarWith support: injectIccoaDex is skipped and only the
-      # compile-time stub jar is used.
-      - name: Restore ICCOA SDK dex (optional)
-        env:
-          ICCOA_SDK_DEX_BASE64: ${{ secrets.ICCOA_SDK_DEX_BASE64 }}
+      # The CarWith / CarLink protocol SDK is a proprietary prebuilt dex and is not in git
+      # (see app/libs/README.md). It cannot be carried in a repository secret either:
+      # Actions secrets are capped at 48 KB and the dex is ~7 MB.
+      #
+      # CI is therefore a compile / R8 / test check. Without the dex, injectIccoaDex is
+      # skipped and the uploaded APK has no CarWith support — which is why the artifact is
+      # labelled accordingly rather than presented as a release candidate.
+      - name: Check for the ICCOA SDK dex
         run: |
-          if [ -n "${ICCOA_SDK_DEX_BASE64:-}" ]; then
-            printf '%s' "$ICCOA_SDK_DEX_BASE64" | base64 -d > app/libs/icar-sdk.dex
-            echo "SDK dex restored: $(stat -c%s app/libs/icar-sdk.dex) bytes"
+          if [ -f app/libs/icar-sdk.dex ]; then
+            echo "SDK dex present: $(stat -c%s app/libs/icar-sdk.dex) bytes — the build will be functional."
           else
-            echo "::warning title=CarWith support missing::ICCOA_SDK_DEX_BASE64 is not set for this run, so the artifact will not be able to connect to CarWith."
+            echo "::notice title=Compile check only::app/libs/icar-sdk.dex is absent, so the packaged APK will not be able to connect to CarWith."
           fi
 
       - name: Set up Gradle
@@ -86,11 +86,11 @@ jobs:
           path: app/build/outputs/apk/github/debug/*.apk
           if-no-files-found: warn
 
-      - name: Upload release APK
+      - name: Upload release APK (unsigned, R8 check)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: miauto-github-release-apk
+          name: miauto-github-release-apk-unsigned
           path: app/build/outputs/apk/github/release/*.apk
           if-no-files-found: warn
 

@@ -7,18 +7,17 @@
 
 ## Secrets
 
-| Secret | Required | Purpose |
-| --- | --- | --- |
-| `ICCOA_SDK_DEX_BASE64` | No | The CarWith / CarLink SDK dex, base64-encoded. Not in git (see [`app/libs/README.md`](../../app/libs/README.md)). Without it the build still succeeds, but the uploaded APK cannot connect to CarWith and CI emits a warning. |
+None. The CarWith / CarLink SDK dex that CI would otherwise need cannot be carried as a
+repository secret: Actions secrets are capped at **48 KB** and the dex is about 7 MB.
 
-To create the value:
+CI therefore builds and tests **without** the SDK. `injectIccoaDex` is skipped, and the
+uploaded APK cannot connect to CarWith. That is a compile / R8 / unit-test check, not a
+release candidate — the release assets on the releases page are built locally, where
+`app/libs/icar-sdk.dex` is present.
 
-```sh
-base64 -w0 app/libs/icar-sdk.dex   # macOS: base64 -i app/libs/icar-sdk.dex
-```
-
-Paste the output into *Settings → Secrets and variables → Actions → New repository secret*.
-Pull requests opened from forks receive no secrets, so they exercise the no-SDK path.
+If a runner already has `app/libs/icar-sdk.dex` on disk (a self-hosted runner, or a step
+that provisions it), the build picks it up automatically and the artifact is functional;
+the workflow logs which of the two paths it took.
 
 ## Notes
 
