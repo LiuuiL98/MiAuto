@@ -37,7 +37,7 @@ public class IccoaManager {
     /** 事件回调。由 UI / 导航桥接实现。 */
     public interface Listener {
         void onLog(String msg);
-        /** 已连接状态变化：0 断开 / 1 连接中 / 2 已连接 / 3 已建立 */
+        /** ICCOA SDK state code: see STATE_* constants in IccoaManager. */
         void onConnectionState(int state);
         void onPinCode(String pinCode, String carDeviceName);
         /** Pairing was restarted; clear any previously displayed code. */
@@ -373,26 +373,37 @@ public class IccoaManager {
         }
 
         @Override
-        public void onConnectStateChanged(String deviceID, int oldState, int newState) {
-            log("onConnectStateChanged device=" + shortId(deviceID) + " "
-                    + stateName(oldState) + " -> " + stateName(newState));
-            if (newState == 0 && oldState != 0) {
-                // 会话真正结束（不是启动时的初始 DISCONNECTED）。清掉已过期的配对码并延时重新
-                // 广播：手机端 CarWith 会重新发现车机并触发一次全新配对（新的 onPinCode）。
+        public void onConnectStateChanged(String deviceID, int state, int extra) {
+            // SDK callback shape is (deviceId, state, extra); the third parameter is an error /
+            // detail value, not a second state. Treating it as "newState" (often -1 on success)
+            // prevents the UI from ever seeing STATE_CONNECTED and therefore never creates the
+            // Surface that startCast() needs.
+            log("onConnectStateChanged device=" + shortId(deviceID)
+                    + " state=" + stateName(state) + " (" + state + ") extra=" + extra);
+
+            if (state == STATE_DISCONNECT || state == STATE_CAST_DISCONNECTED
+                    || state == STATE_DISCONNECT_BY_USER) {
                 sessionActive = false;
                 lastPinCode = null;
                 castStarted = false;
                 scheduleReAdvertise();
                 scheduleAutoRefresh();
-            } else if (newState == 2 || newState == 3) {
-                // 已连上：撤销任何待执行的重新广播，免得刚连上就被重启广播打断；看门狗也会因此空转。
+            } else if (state == STATE_CONNECTED || state == STATE_CAST_CONNECTED
+                    || state == STATE_GO_TO_HOME || state == STATE_BACK_TO_FOREGROUND) {
+                // State 2 means the phone link is up; state 4 means the cast stream is established.
+                // Launching the projection surface at state 2 is intentional: startCast() requires
+                // that Surface, so waiting until state 4 would deadlock the flow.
                 sessionActive = true;
                 main.removeCallbacks(reAdvertiseRunnable);
+            } else if (state == STATE_CONNECT_FAILED) {
+                log("✗ ICCOA connection failed; SDK error/detail code=" + extra);
+                sessionActive = false;
+                scheduleReAdvertise();
+                scheduleAutoRefresh();
             }
-            // newState == 1（CONNECTING）刻意不置 sessionActive：若协商卡死超过一个刷新周期，
-            // 看门狗需要能重播把它救回来。正常协商只需数秒，30 秒的余量足够。
-            final int st = newState;
-            main.post(() -> listener.onConnectionState(st));
+
+            final int stateCode = state;
+            main.post(() -> listener.onConnectionState(stateCode));
         }
 
         @Override
@@ -611,12 +622,26 @@ public class IccoaManager {
         try { r.run(); } catch (Throwable t) { log("!!! " + where + " 异常: " + t); }
     }
 
+    // ICCOA UCarConnectState values from the SDK / reference implementation.
+    private static final int STATE_DISCONNECT = 1;
+    private static final int STATE_CONNECTED = 2;
+    private static final int STATE_CONNECT_FAILED = 3;
+    private static final int STATE_CAST_CONNECTED = 4;
+    private static final int STATE_CAST_DISCONNECTED = 5;
+    private static final int STATE_GO_TO_HOME = 6;
+    private static final int STATE_BACK_TO_FOREGROUND = 7;
+    private static final int STATE_DISCONNECT_BY_USER = 11;
+
     private static String stateName(int s) {
         switch (s) {
-            case 0: return "DISCONNECTED";
-            case 1: return "CONNECTING";
-            case 2: return "CONNECTED";
-            case 3: return "ESTABLISHED";
+            case STATE_DISCONNECT: return "DISCONNECT";
+            case STATE_CONNECTED: return "CONNECTED";
+            case STATE_CONNECT_FAILED: return "CONNECT_FAILED";
+            case STATE_CAST_CONNECTED: return "CAST_CONNECTED";
+            case STATE_CAST_DISCONNECTED: return "CAST_DISCONNECTED";
+            case STATE_GO_TO_HOME: return "GO_TO_HOME";
+            case STATE_BACK_TO_FOREGROUND: return "BACK_TO_FOREGROUND";
+            case STATE_DISCONNECT_BY_USER: return "DISCONNECT_BY_USER";
             default: return "STATE_" + s;
         }
     }
