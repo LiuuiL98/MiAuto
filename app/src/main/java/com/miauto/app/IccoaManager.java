@@ -227,6 +227,7 @@ public class IccoaManager {
             @Override
             public void onInitSuccess() {
                 log("★ onInitSuccess()");
+                logTransportPermissions();
                 sdkReady = true;
                 sdkInitialized = true;   // ★ init-once 守门
                 main.post(() -> safe("doAdvertise", IccoaManager.this::doAdvertise));
@@ -373,7 +374,8 @@ public class IccoaManager {
 
         @Override
         public void onConnectStateChanged(String deviceID, int oldState, int newState) {
-            log("onConnectStateChanged " + stateName(oldState) + " -> " + stateName(newState));
+            log("onConnectStateChanged device=" + shortId(deviceID) + " "
+                    + stateName(oldState) + " -> " + stateName(newState));
             if (newState == 0 && oldState != 0) {
                 // 会话真正结束（不是启动时的初始 DISCONNECTED）。清掉已过期的配对码并延时重新
                 // 广播：手机端 CarWith 会重新发现车机并触发一次全新配对（新的 onPinCode）。
@@ -395,7 +397,7 @@ public class IccoaManager {
 
         @Override
         public void onConnectingProgress(String phoneId, int progress) {
-            log("onConnectingProgress " + progress);
+            log("onConnectingProgress device=" + shortId(phoneId) + " progress=" + progress);
         }
 
         @Override
@@ -410,21 +412,24 @@ public class IccoaManager {
 
         @Override
         public UCarCommon.WorkMode onSelectWorkMode(String deviceID, UCarCommon.WorkMode supported) {
-            UCarCommon.WorkMode chosen;
-            if (supported == null) {
-                chosen = UCarCommon.WorkMode.NONE;
-            } else if (supported.isSupportAppWindowCast()) {
-                chosen = UCarCommon.WorkMode.APP_WINDOW_CAST;
-            } else if (supported.isSupportAppFullScreenCast()) {
-                chosen = UCarCommon.WorkMode.APP_FULLSCREEN_CAST;
-            } else if (supported.isSupportNormalCast()) {
-                chosen = UCarCommon.WorkMode.NORMAL_CAST;
-            } else if (supported.isSupportDataTransfer()) {
-                chosen = UCarCommon.WorkMode.DATA_TRANSFER;
-            } else {
-                chosen = UCarCommon.WorkMode.NONE;
-            }
-            log("onSelectWorkMode → " + chosen);
+            // buildConfig() advertises classic/normal mirroring only. Never select app-window,
+            // app-fullscreen or data-transfer modes when this receiver declared them unsupported:
+            // that tells the phone we can do a mode the receiver cannot actually host.
+            boolean normal = supported != null && supported.isSupportNormalCast();
+            boolean fullScreen = supported != null && supported.isSupportAppFullScreenCast();
+            boolean appWindow = supported != null && supported.isSupportAppWindowCast();
+            boolean dataTransfer = supported != null && supported.isSupportDataTransfer();
+
+            UCarCommon.WorkMode chosen = normal
+                    ? UCarCommon.WorkMode.NORMAL_CAST
+                    : UCarCommon.WorkMode.NONE;
+            log("onSelectWorkMode device=" + shortId(deviceID)
+                    + " peer{normal=" + normal
+                    + ", appFullscreen=" + fullScreen
+                    + ", appWindow=" + appWindow
+                    + ", dataTransfer=" + dataTransfer
+                    + "} local{normal=true, appFullscreen=false, appWindow=false, dataTransfer=false}"
+                    + " -> " + chosen);
             return chosen;
         }
     };
@@ -548,6 +553,44 @@ public class IccoaManager {
         }
         new Random().nextBytes(macBytes);
         return macBytes;
+    }
+
+    /**
+     * These SDK permissions are privileged/signature permissions on standard Android builds.
+     * Declaring them in AndroidManifest does not grant them to an ordinary sideloaded app.
+     * Log the actual grants so a BLE-success/Wi-Fi-failure can be separated from protocol errors.
+     */
+    private void logTransportPermissions() {
+        String[] permissions = new String[] {
+                "android.permission.TETHER_PRIVILEGED",
+                "android.permission.OVERRIDE_WIFI_CONFIG",
+                "android.permission.NETWORK_SETTINGS",
+                "android.permission.NETWORK_STACK",
+                "android.permission.LOCAL_MAC_ADDRESS",
+                "android.permission.BLUETOOTH_PRIVILEGED",
+                "android.permission.MANAGE_USB",
+                android.Manifest.permission.ACCESS_WIFI_STATE,
+                android.Manifest.permission.CHANGE_WIFI_STATE,
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.BLUETOOTH,
+                android.Manifest.permission.BLUETOOTH_ADMIN
+        };
+        for (String permission : permissions) {
+            try {
+                int result = appCtx.checkPermission(permission,
+                        android.os.Process.myPid(), android.os.Process.myUid());
+                log("transportPermission " + permission + "="
+                        + (result == android.content.pm.PackageManager.PERMISSION_GRANTED
+                            ? "GRANTED" : "DENIED"));
+            } catch (Throwable t) {
+                log("transportPermission " + permission + "=CHECK_ERROR " + t.getClass().getSimpleName());
+            }
+        }
+    }
+
+    private static String shortId(String id) {
+        if (id == null || id.isEmpty()) return "?";
+        return id.length() <= 4 ? id : "…" + id.substring(id.length() - 4);
     }
 
     private void log(String msg) {
