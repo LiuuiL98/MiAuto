@@ -74,10 +74,10 @@ jobs:
 
           with zipfile.ZipFile(source_apk) as zf:
               for name in zf.namelist():
-                  if not re.fullmatch(r"classes(?:[0-9]+)?\\.dex", name):
+                  if not re.fullmatch(r"classes(?:[0-9]+)?\.dex", name):
                       continue
                   data = zf.read(name)
-                  if not data.startswith(b"dex\\n"):
+                  if not data.startswith(b"dex\n"):
                       continue
                   # The ICCOA SDK's generated UCarProto classes have hundreds of
                   # references in the SDK dex; app dexes only refer to a few SDK types.
