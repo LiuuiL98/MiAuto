@@ -412,24 +412,33 @@ public class IccoaManager {
 
         @Override
         public UCarCommon.WorkMode onSelectWorkMode(String deviceID, UCarCommon.WorkMode supported) {
-            // buildConfig() advertises classic/normal mirroring only. Never select app-window,
-            // app-fullscreen or data-transfer modes when this receiver declared them unsupported:
-            // that tells the phone we can do a mode the receiver cannot actually host.
+            // The SDK supplies this car's advertised capability set; select exactly one mode,
+            // following the same preference order as the official sample.
             boolean normal = supported != null && supported.isSupportNormalCast();
             boolean fullScreen = supported != null && supported.isSupportAppFullScreenCast();
             boolean appWindow = supported != null && supported.isSupportAppWindowCast();
             boolean dataTransfer = supported != null && supported.isSupportDataTransfer();
 
-            UCarCommon.WorkMode chosen = normal
-                    ? UCarCommon.WorkMode.NORMAL_CAST
-                    : UCarCommon.WorkMode.NONE;
+            UCarCommon.WorkMode chosen;
+            if (supported == null) {
+                chosen = UCarCommon.WorkMode.NONE;
+            } else if (appWindow) {
+                chosen = UCarCommon.WorkMode.APP_WINDOW_CAST;
+            } else if (fullScreen) {
+                chosen = UCarCommon.WorkMode.APP_FULLSCREEN_CAST;
+            } else if (normal) {
+                chosen = UCarCommon.WorkMode.NORMAL_CAST;
+            } else if (dataTransfer) {
+                chosen = UCarCommon.WorkMode.DATA_TRANSFER;
+            } else {
+                chosen = UCarCommon.WorkMode.NONE;
+            }
             log("onSelectWorkMode device=" + shortId(deviceID)
-                    + " peer{normal=" + normal
+                    + " sdkSupportedSet{normal=" + normal
                     + ", appFullscreen=" + fullScreen
                     + ", appWindow=" + appWindow
                     + ", dataTransfer=" + dataTransfer
-                    + "} local{normal=true, appFullscreen=false, appWindow=false, dataTransfer=false}"
-                    + " -> " + chosen);
+                    + "} -> " + chosen);
             return chosen;
         }
     };
