@@ -117,6 +117,12 @@ class IcocaBridge(context: Context) : IccoaManager.Listener {
      */
     fun setSurface(surface: Surface) = manager.setSurface(surface)
 
+    /** Rebind after SurfaceHolder.surfaceChanged, including size changes on the same Surface object. */
+    fun refreshSurface(surface: Surface) = manager.refreshSurface(surface)
+
+    /** Release the invalid Surface without tearing down the phone connection. */
+    fun clearSurface(surface: Surface) = manager.clearSurface(surface)
+
     /** Last PIN the SDK issued, or null. Useful when the projection activity opens late. */
     fun lastPinCode(): String? = manager.lastPinCode
 
@@ -145,6 +151,11 @@ class IcocaBridge(context: Context) : IccoaManager.Listener {
         _state.update {
             it.copy(phase = Phase.Pairing, pinCode = pinCode, carDeviceName = carDeviceName)
         }
+    }
+
+    override fun onPairingReset() {
+        AppLog.i("ICCOA: pairing restarted; clearing stale PIN")
+        _state.update { it.copy(phase = Phase.Advertising, pinCode = null) }
     }
 
     override fun onCastStarted() {
