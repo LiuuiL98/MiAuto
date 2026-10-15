@@ -108,6 +108,25 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # The post-build ICCOA dex injector must re-sign the modified debug APK.
+      # Android's default debug keystore is not guaranteed to exist on a fresh hosted runner.
+      - name: Prepare default Android debug keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.android"
+          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+            keytool -genkeypair -v \
+              -keystore "$HOME/.android/debug.keystore" \
+              -storetype JKS \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+          keytool -list -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey
+
       # github flavor only: the playstore flavor is not covered by this repository's CI.
       - name: Assemble github debug and release
         run: ./gradlew :app:assembleGithubDebug :app:assembleGithubRelease --stacktrace
