@@ -11,9 +11,6 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Read-only; this workflow needs no write scopes and touches no secret beyond the optional
-# SDK dex below, so it runs unchanged on pull requests opened from forks. Fork PRs get no
-# secrets, which is why the SDK-restore step is allowed to be a no-op.
 permissions:
   contents: read
 
@@ -51,40 +48,120 @@ jobs:
           echo "sdkmanager failed after 3 attempts" >&2
           exit 1
 
+      # The source repository intentionally does not commit the prebuilt ICCOA SDK dex.
+      # Restore it from the upstream project's public, version-pinned APK release at build
+      # time only. This keeps the binary out of this fork's git history while allowing the
+      # debug artifact to retain CarWith/ICCOA functionality.
+      - name: Restore ICCOA SDK dex from public MiAuto release
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_apk="$RUNNER_TEMP/MiAuto-0.1.1.apk"
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "https://github.com/PiggyBackBayonet/MiAuto/releases/download/v0.1.1/MiAuto-0.1.1.apk" \
+            --output "$source_apk"
+          echo "3a348c59cffe3d97f1f7f2d51483d97c4981d83b391a15696c454c6febbc1b45  $source_apk" | sha256sum --check
+
+          python3 - "$source_apk" app/libs/icar-sdk.dex <<'PY'
+          import re
+          import sys
+          import zipfile
+          from pathlib import Path
+
+          source_apk = Path(sys.argv[1])
+          output_dex = Path(sys.argv[2])
+          candidates = []
+
+          with zipfile.ZipFile(source_apk) as zf:
+              for name in zf.namelist():
+                  if not re.fullmatch(r"classes(?:[0-9]+)?\.dex", name):
+                      continue
+                  data = zf.read(name)
+                  if not data.startswith(b"dex\n"):
+                      continue
+                  # The ICCOA SDK's generated UCarProto classes have hundreds of
+                  # references in the SDK dex; app dexes only refer to a few SDK types.
+                  score = data.count(b"com/ucar/databus/proto/UCarProto$")
+                  if score >= 100 and len(data) >= 4_000_000:
+                      candidates.append((score, len(data), name, data))
+
+          if not candidates:
+              raise SystemExit("Could not identify the ICCOA SDK dex in the pinned upstream APK.")
+          candidates.sort(reverse=True, key=lambda item: (item[0], item[1]))
+          best = candidates[0]
+          if len(candidates) > 1 and candidates[1][0] == best[0]:
+              raise SystemExit("More than one ICCOA SDK dex matched; refusing an ambiguous injection.")
+
+          output_dex.parent.mkdir(parents=True, exist_ok=True)
+          output_dex.write_bytes(best[3])
+          print(f"Extracted {best[2]} as {output_dex}: {best[1]} bytes, marker score={best[0]}")
+          PY
+
       - name: Check core translations
         run: python3 scripts/check_localization.py
 
-      # The CarWith / CarLink protocol SDK is a proprietary prebuilt dex and is not in git
-      # (see app/libs/README.md). It cannot be carried in a repository secret either:
-      # Actions secrets are capped at 48 KB and the dex is ~7 MB.
-      #
-      # CI is therefore a compile / R8 / test check. Without the dex, injectIccoaDex is
-      # skipped and the uploaded APK has no CarWith support — which is why the artifact is
-      # labelled accordingly rather than presented as a release candidate.
-      - name: Check for the ICCOA SDK dex
+      - name: Verify ICCOA SDK dex is ready
         run: |
-          if [ -f app/libs/icar-sdk.dex ]; then
-            echo "SDK dex present: $(stat -c%s app/libs/icar-sdk.dex) bytes — the build will be functional."
-          else
-            echo "::notice title=Compile check only::app/libs/icar-sdk.dex is absent, so the packaged APK will not be able to connect to CarWith."
-          fi
+          test -s app/libs/icar-sdk.dex
+          echo "ICCOA SDK dex restored: $(stat -c%s app/libs/icar-sdk.dex) bytes"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # The post-build ICCOA dex injector must re-sign the modified debug APK.
+      # Android's default debug keystore is not guaranteed to exist on a fresh hosted runner.
+      - name: Prepare default Android debug keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.android"
+          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+            keytool -genkeypair -v \
+              -keystore "$HOME/.android/debug.keystore" \
+              -storetype JKS \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+          keytool -list -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey
+
       # github flavor only: the playstore flavor is not covered by this repository's CI.
-      # The release variant is compiled here as an R8 / resource-shrinking check; it is
-      # left unsigned because key.properties is not in the repository.
       - name: Assemble github debug and release
         run: ./gradlew :app:assembleGithubDebug :app:assembleGithubRelease --stacktrace
 
-      - name: Upload debug APK
-        if: always()
+      - name: Verify debug APK contains injected ICCOA SDK
+        run: |
+          python3 - <<'PY'
+          import glob
+          import zipfile
+          from pathlib import Path
+
+          sd = Path("app/libs/icar-sdk.dex").read_bytes()
+          apks = glob.glob("app/build/outputs/apk/github/debug/*.apk")
+          if not apks:
+              raise SystemExit("No github debug APK was produced")
+          matched = False
+          for apk in apks:
+              with zipfile.ZipFile(apk) as zf:
+                  dex_names = [n for n in zf.namelist() if n.startswith("classes") and n.endswith(".dex")]
+                  matched = any(zf.read(n) == sd for n in dex_names)
+              if matched:
+                  print(f"Verified ICCOA SDK dex is present in {apk}")
+                  break
+          if not matched:
+              raise SystemExit("Debug APK does not contain the exact ICCOA SDK dex")
+          PY
+
+      - name: Upload functional debug APK for testing
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: miauto-github-debug-apk
+          name: miauto-iccoa-fixed-debug-apk
           path: app/build/outputs/apk/github/debug/*.apk
-          if-no-files-found: warn
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload release APK (unsigned, R8 check)
         if: always()

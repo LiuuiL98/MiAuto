@@ -37,9 +37,11 @@ public class IccoaManager {
     /** 事件回调。由 UI / 导航桥接实现。 */
     public interface Listener {
         void onLog(String msg);
-        /** 已连接状态变化：0 断开 / 1 连接中 / 2 已连接 / 3 已建立 */
+        /** ICCOA SDK state code: see STATE_* constants in IccoaManager. */
         void onConnectionState(int state);
         void onPinCode(String pinCode, String carDeviceName);
+        /** Pairing was restarted; clear any previously displayed code. */
+        void onPairingReset();
         void onCastStarted();
         /** 手机导航信息（POC-2 / BYD 仪表与 HUD 的数据源）。 */
         void onNavigation(UCarCommon.NavigationInfo info);
@@ -141,11 +143,53 @@ public class IccoaManager {
 
     public String getLastPinCode() { return lastPinCode; }
 
-    /** Surface 就绪 / 变化（Activity 的 surfaceChanged 回调里调用）。 */
+    /** Surface 就绪。切换到新 Surface 时先停止旧的投屏绑定，避免 SDK 继续写入失效画布。 */
     public void setSurface(Surface s) {
-        this.surface = s;
-        castRetry = 0;          // 新 Surface 到位，重试预算重置
+        if (s == null) {
+            clearSurface(surface);
+            return;
+        }
+        if (surface != s) {
+            pauseCastForSurfaceChange();
+            surface = s;
+        }
+        castRetry = 0;
         tryStartCast();
+    }
+
+    /**
+     * Surface 尺寸变更时重新绑定。部分设备只回调 surfaceChanged，而不会替换 Surface 对象；
+     * 仅比较对象引用会漏掉这种情况，导致 SDK 继续使用旧的视频目标。
+     */
+    public void refreshSurface(Surface s) {
+        if (s == null) {
+            clearSurface(surface);
+            return;
+        }
+        pauseCastForSurfaceChange();
+        surface = s;
+        castRetry = 0;
+        tryStartCast();
+    }
+
+    /** Surface 销毁时清除引用并停止投屏，不断开 BLE / Wi-Fi 会话。 */
+    public void clearSurface(Surface destroyed) {
+        if (surface == null || (destroyed != null && surface != destroyed)) return;
+        surface = null;
+        castRetry = 0;
+        pauseCastForSurfaceChange();
+    }
+
+    private void pauseCastForSurfaceChange() {
+        if (castStarted && adapter != null) {
+            try {
+                adapter.pauseCast();
+            } catch (Throwable t) {
+                log("Surface 切换时 pauseCast 异常: " + t);
+            }
+        }
+        // Must be reset even if pauseCast throws: a replacement Surface still needs a new startCast.
+        castStarted = false;
     }
 
     // ==================================================================
@@ -183,6 +227,7 @@ public class IccoaManager {
             @Override
             public void onInitSuccess() {
                 log("★ onInitSuccess()");
+                logTransportPermissions();
                 sdkReady = true;
                 sdkInitialized = true;   // ★ init-once 守门
                 main.post(() -> safe("doAdvertise", IccoaManager.this::doAdvertise));
@@ -218,6 +263,7 @@ public class IccoaManager {
         castStarted = false;
         castRetry = 0;
         lastPinCode = null;
+        main.post(listener::onPairingReset);
         doAdvertise();
     }
 
@@ -327,30 +373,42 @@ public class IccoaManager {
         }
 
         @Override
-        public void onConnectStateChanged(String deviceID, int oldState, int newState) {
-            log("onConnectStateChanged " + stateName(oldState) + " -> " + stateName(newState));
-            if (newState == 0 && oldState != 0) {
-                // 会话真正结束（不是启动时的初始 DISCONNECTED）。清掉已过期的配对码并延时重新
-                // 广播：手机端 CarWith 会重新发现车机并触发一次全新配对（新的 onPinCode）。
+        public void onConnectStateChanged(String deviceID, int state, int extra) {
+            // SDK callback shape is (deviceId, state, extra); the third parameter is an error /
+            // detail value, not a second state. Treating it as "newState" (often -1 on success)
+            // prevents the UI from ever seeing STATE_CONNECTED and therefore never creates the
+            // Surface that startCast() needs.
+            log("onConnectStateChanged device=" + shortId(deviceID)
+                    + " state=" + stateName(state) + " (" + state + ") extra=" + extra);
+
+            if (state == STATE_DISCONNECT || state == STATE_CAST_DISCONNECTED
+                    || state == STATE_DISCONNECT_BY_USER) {
                 sessionActive = false;
                 lastPinCode = null;
                 castStarted = false;
                 scheduleReAdvertise();
                 scheduleAutoRefresh();
-            } else if (newState == 2 || newState == 3) {
-                // 已连上：撤销任何待执行的重新广播，免得刚连上就被重启广播打断；看门狗也会因此空转。
+            } else if (state == STATE_CONNECTED || state == STATE_CAST_CONNECTED
+                    || state == STATE_GO_TO_HOME || state == STATE_BACK_TO_FOREGROUND) {
+                // State 2 means the phone link is up; state 4 means the cast stream is established.
+                // Launching the projection surface at state 2 is intentional: startCast() requires
+                // that Surface, so waiting until state 4 would deadlock the flow.
                 sessionActive = true;
                 main.removeCallbacks(reAdvertiseRunnable);
+            } else if (state == STATE_CONNECT_FAILED) {
+                log("✗ ICCOA connection failed; SDK error/detail code=" + extra);
+                sessionActive = false;
+                scheduleReAdvertise();
+                scheduleAutoRefresh();
             }
-            // newState == 1（CONNECTING）刻意不置 sessionActive：若协商卡死超过一个刷新周期，
-            // 看门狗需要能重播把它救回来。正常协商只需数秒，30 秒的余量足够。
-            final int st = newState;
-            main.post(() -> listener.onConnectionState(st));
+
+            final int stateCode = state;
+            main.post(() -> listener.onConnectionState(stateCode));
         }
 
         @Override
         public void onConnectingProgress(String phoneId, int progress) {
-            log("onConnectingProgress " + progress);
+            log("onConnectingProgress device=" + shortId(phoneId) + " progress=" + progress);
         }
 
         @Override
@@ -365,21 +423,33 @@ public class IccoaManager {
 
         @Override
         public UCarCommon.WorkMode onSelectWorkMode(String deviceID, UCarCommon.WorkMode supported) {
+            // The SDK supplies this car's advertised capability set; select exactly one mode,
+            // following the same preference order as the official sample.
+            boolean normal = supported != null && supported.isSupportNormalCast();
+            boolean fullScreen = supported != null && supported.isSupportAppFullScreenCast();
+            boolean appWindow = supported != null && supported.isSupportAppWindowCast();
+            boolean dataTransfer = supported != null && supported.isSupportDataTransfer();
+
             UCarCommon.WorkMode chosen;
             if (supported == null) {
                 chosen = UCarCommon.WorkMode.NONE;
-            } else if (supported.isSupportAppWindowCast()) {
+            } else if (appWindow) {
                 chosen = UCarCommon.WorkMode.APP_WINDOW_CAST;
-            } else if (supported.isSupportAppFullScreenCast()) {
+            } else if (fullScreen) {
                 chosen = UCarCommon.WorkMode.APP_FULLSCREEN_CAST;
-            } else if (supported.isSupportNormalCast()) {
+            } else if (normal) {
                 chosen = UCarCommon.WorkMode.NORMAL_CAST;
-            } else if (supported.isSupportDataTransfer()) {
+            } else if (dataTransfer) {
                 chosen = UCarCommon.WorkMode.DATA_TRANSFER;
             } else {
                 chosen = UCarCommon.WorkMode.NONE;
             }
-            log("onSelectWorkMode → " + chosen);
+            log("onSelectWorkMode device=" + shortId(deviceID)
+                    + " sdkSupportedSet{normal=" + normal
+                    + ", appFullscreen=" + fullScreen
+                    + ", appWindow=" + appWindow
+                    + ", dataTransfer=" + dataTransfer
+                    + "} -> " + chosen);
             return chosen;
         }
     };
@@ -435,6 +505,10 @@ public class IccoaManager {
                 .setSupportAppWindowCast(false)
                 .build();
 
+        // This APK is installed as an ordinary third-party app, not a system/privileged app.
+        // The ICCOA SoftAP path requires TETHER_PRIVILEGED and can fail after PIN confirmation
+        // with SecurityException on stock Android. Advertise only Wi-Fi Direct for this build.
+        log("ICCOA transport capability = Wi-Fi Direct (P2P) only; SoftAP disabled for sideload build");
         return new UCarConfig.Builder()
                 .setCarBrMac(carId)                  // 必须恰好 6 字节
                 .setDpi(dpi)                         // 120..640
@@ -445,7 +519,7 @@ public class IccoaManager {
                 .setVideoDisplayWidth(vw)
                 .setVideoDisplayHeight(vh)
                 .setSupportP2P(true)
-                .setSupportSoftAP(true)
+                .setSupportSoftAP(false)
                 .setSupportCamera(false)
                 .setSupportHevc(false)
                 .setSupportMic(true)
@@ -505,6 +579,44 @@ public class IccoaManager {
         return macBytes;
     }
 
+    /**
+     * These SDK permissions are privileged/signature permissions on standard Android builds.
+     * Declaring them in AndroidManifest does not grant them to an ordinary sideloaded app.
+     * Log the actual grants so a BLE-success/Wi-Fi-failure can be separated from protocol errors.
+     */
+    private void logTransportPermissions() {
+        String[] permissions = new String[] {
+                "android.permission.TETHER_PRIVILEGED",
+                "android.permission.OVERRIDE_WIFI_CONFIG",
+                "android.permission.NETWORK_SETTINGS",
+                "android.permission.NETWORK_STACK",
+                "android.permission.LOCAL_MAC_ADDRESS",
+                "android.permission.BLUETOOTH_PRIVILEGED",
+                "android.permission.MANAGE_USB",
+                android.Manifest.permission.ACCESS_WIFI_STATE,
+                android.Manifest.permission.CHANGE_WIFI_STATE,
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.BLUETOOTH,
+                android.Manifest.permission.BLUETOOTH_ADMIN
+        };
+        for (String permission : permissions) {
+            try {
+                int result = appCtx.checkPermission(permission,
+                        android.os.Process.myPid(), android.os.Process.myUid());
+                log("transportPermission " + permission + "="
+                        + (result == android.content.pm.PackageManager.PERMISSION_GRANTED
+                            ? "GRANTED" : "DENIED"));
+            } catch (Throwable t) {
+                log("transportPermission " + permission + "=CHECK_ERROR " + t.getClass().getSimpleName());
+            }
+        }
+    }
+
+    private static String shortId(String id) {
+        if (id == null || id.isEmpty()) return "?";
+        return id.length() <= 4 ? id : "…" + id.substring(id.length() - 4);
+    }
+
     private void log(String msg) {
         Log.i(TAG, msg);
         try { listener.onLog(msg); } catch (Throwable ignored) { }
@@ -514,12 +626,26 @@ public class IccoaManager {
         try { r.run(); } catch (Throwable t) { log("!!! " + where + " 异常: " + t); }
     }
 
+    // ICCOA UCarConnectState values from the SDK / reference implementation.
+    private static final int STATE_DISCONNECT = 1;
+    private static final int STATE_CONNECTED = 2;
+    private static final int STATE_CONNECT_FAILED = 3;
+    private static final int STATE_CAST_CONNECTED = 4;
+    private static final int STATE_CAST_DISCONNECTED = 5;
+    private static final int STATE_GO_TO_HOME = 6;
+    private static final int STATE_BACK_TO_FOREGROUND = 7;
+    private static final int STATE_DISCONNECT_BY_USER = 11;
+
     private static String stateName(int s) {
         switch (s) {
-            case 0: return "DISCONNECTED";
-            case 1: return "CONNECTING";
-            case 2: return "CONNECTED";
-            case 3: return "ESTABLISHED";
+            case STATE_DISCONNECT: return "DISCONNECT";
+            case STATE_CONNECTED: return "CONNECTED";
+            case STATE_CONNECT_FAILED: return "CONNECT_FAILED";
+            case STATE_CAST_CONNECTED: return "CAST_CONNECTED";
+            case STATE_CAST_DISCONNECTED: return "CAST_DISCONNECTED";
+            case STATE_GO_TO_HOME: return "GO_TO_HOME";
+            case STATE_BACK_TO_FOREGROUND: return "BACK_TO_FOREGROUND";
+            case STATE_DISCONNECT_BY_USER: return "DISCONNECT_BY_USER";
             default: return "STATE_" + s;
         }
     }

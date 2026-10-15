@@ -117,6 +117,12 @@ class IcocaBridge(context: Context) : IccoaManager.Listener {
      */
     fun setSurface(surface: Surface) = manager.setSurface(surface)
 
+    /** Rebind after SurfaceHolder.surfaceChanged, including size changes on the same Surface object. */
+    fun refreshSurface(surface: Surface) = manager.refreshSurface(surface)
+
+    /** Release the invalid Surface without tearing down the phone connection. */
+    fun clearSurface(surface: Surface) = manager.clearSurface(surface)
+
     /** Last PIN the SDK issued, or null. Useful when the projection activity opens late. */
     fun lastPinCode(): String? = manager.lastPinCode
 
@@ -130,10 +136,14 @@ class IcocaBridge(context: Context) : IccoaManager.Listener {
     }
 
     override fun onConnectionState(stateCode: Int) {
+        // UCarConnectState codes:
+        // 1 DISCONNECT, 2 CONNECTED, 3 CONNECT_FAILED, 4 CAST_CONNECTED,
+        // 5 CAST_DISCONNECTED, 6 GO_TO_HOME, 7 BACK_TO_FOREGROUND, 11 DISCONNECT_BY_USER.
+        // Expose Connected from state 2, not only state 4: MainActivity must create the
+        // projection Surface before IccoaManager can call startCast() and receive state 4.
         val phase = when (stateCode) {
-            0 -> Phase.Advertising
-            1, 2 -> Phase.Pairing
-            3 -> Phase.Connected
+            2, 4, 6, 7 -> Phase.Connected
+            1, 3, 5, 11 -> Phase.Advertising
             else -> Phase.Advertising
         }
         AppLog.i("ICCOA: connection state $stateCode -> $phase")
@@ -145,6 +155,11 @@ class IcocaBridge(context: Context) : IccoaManager.Listener {
         _state.update {
             it.copy(phase = Phase.Pairing, pinCode = pinCode, carDeviceName = carDeviceName)
         }
+    }
+
+    override fun onPairingReset() {
+        AppLog.i("ICCOA: pairing restarted; clearing stale PIN")
+        _state.update { it.copy(phase = Phase.Advertising, pinCode = null) }
     }
 
     override fun onCastStarted() {

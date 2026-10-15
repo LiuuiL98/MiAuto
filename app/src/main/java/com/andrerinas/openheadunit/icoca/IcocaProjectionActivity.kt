@@ -49,13 +49,16 @@ class IcocaProjectionActivity : AppCompatActivity() {
 
                 override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
                     AppLog.i("ICCOA projection: surfaceChanged ${width}x$height")
-                    // Re-bind on every change: a size change tears the surface down underneath the
-                    // SDK, and the stale reference would otherwise keep receiving frames.
-                    bridge.setSurface(holder.surface)
+                    // Re-bind even if SurfaceHolder returns the same Java object: some devices
+                    // resize the native buffer without replacing the Surface reference.
+                    bridge.refreshSurface(holder.surface)
                 }
 
                 override fun surfaceDestroyed(holder: SurfaceHolder) {
                     AppLog.i("ICCOA projection: surfaceDestroyed")
+                    // Do not leave a stale Surface in the process-wide SDK manager. A later
+                    // projection Activity must be able to bind a fresh Surface and restart casting.
+                    bridge.clearSurface(holder.surface)
                 }
             }
         )
