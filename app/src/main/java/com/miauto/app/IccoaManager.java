@@ -40,6 +40,8 @@ public class IccoaManager {
         /** 已连接状态变化：0 断开 / 1 连接中 / 2 已连接 / 3 已建立 */
         void onConnectionState(int state);
         void onPinCode(String pinCode, String carDeviceName);
+        /** Pairing was restarted; clear any previously displayed code. */
+        void onPairingReset();
         void onCastStarted();
         /** 手机导航信息（POC-2 / BYD 仪表与 HUD 的数据源）。 */
         void onNavigation(UCarCommon.NavigationInfo info);
@@ -141,11 +143,53 @@ public class IccoaManager {
 
     public String getLastPinCode() { return lastPinCode; }
 
-    /** Surface 就绪 / 变化（Activity 的 surfaceChanged 回调里调用）。 */
+    /** Surface 就绪。切换到新 Surface 时先停止旧的投屏绑定，避免 SDK 继续写入失效画布。 */
     public void setSurface(Surface s) {
-        this.surface = s;
-        castRetry = 0;          // 新 Surface 到位，重试预算重置
+        if (s == null) {
+            clearSurface(surface);
+            return;
+        }
+        if (surface != s) {
+            pauseCastForSurfaceChange();
+            surface = s;
+        }
+        castRetry = 0;
         tryStartCast();
+    }
+
+    /**
+     * Surface 尺寸变更时重新绑定。部分设备只回调 surfaceChanged，而不会替换 Surface 对象；
+     * 仅比较对象引用会漏掉这种情况，导致 SDK 继续使用旧的视频目标。
+     */
+    public void refreshSurface(Surface s) {
+        if (s == null) {
+            clearSurface(surface);
+            return;
+        }
+        pauseCastForSurfaceChange();
+        surface = s;
+        castRetry = 0;
+        tryStartCast();
+    }
+
+    /** Surface 销毁时清除引用并停止投屏，不断开 BLE / Wi-Fi 会话。 */
+    public void clearSurface(Surface destroyed) {
+        if (surface == null || (destroyed != null && surface != destroyed)) return;
+        surface = null;
+        castRetry = 0;
+        pauseCastForSurfaceChange();
+    }
+
+    private void pauseCastForSurfaceChange() {
+        if (castStarted && adapter != null) {
+            try {
+                adapter.pauseCast();
+            } catch (Throwable t) {
+                log("Surface 切换时 pauseCast 异常: " + t);
+            }
+        }
+        // Must be reset even if pauseCast throws: a replacement Surface still needs a new startCast.
+        castStarted = false;
     }
 
     // ==================================================================
@@ -218,6 +262,7 @@ public class IccoaManager {
         castStarted = false;
         castRetry = 0;
         lastPinCode = null;
+        main.post(listener::onPairingReset);
         doAdvertise();
     }
 
