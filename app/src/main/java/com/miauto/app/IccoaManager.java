@@ -505,6 +505,10 @@ public class IccoaManager {
                 .setSupportAppWindowCast(false)
                 .build();
 
+        // This APK is installed as an ordinary third-party app, not a system/privileged app.
+        // The ICCOA SoftAP path requires TETHER_PRIVILEGED and can fail after PIN confirmation
+        // with SecurityException on stock Android. Advertise only Wi-Fi Direct for this build.
+        log("ICCOA transport capability = Wi-Fi Direct (P2P) only; SoftAP disabled for sideload build");
         return new UCarConfig.Builder()
                 .setCarBrMac(carId)                  // 必须恰好 6 字节
                 .setDpi(dpi)                         // 120..640
@@ -515,7 +519,7 @@ public class IccoaManager {
                 .setVideoDisplayWidth(vw)
                 .setVideoDisplayHeight(vh)
                 .setSupportP2P(true)
-                .setSupportSoftAP(true)
+                .setSupportSoftAP(false)
                 .setSupportCamera(false)
                 .setSupportHevc(false)
                 .setSupportMic(true)
